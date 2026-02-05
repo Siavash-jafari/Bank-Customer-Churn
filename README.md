@@ -1,74 +1,90 @@
 # Bank Customer Churn Prediction
 
-This project predicts whether a bank customer will churn (exit) based on demographic and account data from a structured CSV dataset.[file:2]
+This project predicts whether a bank customer will churn (exit) using demographic and account‑level data from a structured CSV dataset.
 
 ## 1. Overview
 
-- Dataset: 10,000 customers with 13 columns from `Churn.csv`.[file:2]  
-- Target: `Exited` (0 = stay, 1 = exit).[file:2]  
-- Objective: Build and compare classification models to support churn‑reduction actions (e.g., which customers to target with retention offers).[file:2]
+- Dataset: 10,000 customers with 13 columns in `Churn.csv`.
+- Target variable: `Exited` (0 = stay, 1 = exit).
+- Goal: Train and compare classification models to support churn‑reduction actions, such as identifying customers to target with retention offers.
 
 ## 2. Data Description
 
-Columns after cleaning:[file:2]
+After basic cleaning, the dataset contains the following features:
 
-- Removed ID‑like fields: `CustomerId`, `Surname`.[file:2]  
-- Categorical features: `Geography` (France, Germany, Spain), `Gender` (Female, Male).[file:2]  
-- Numerical / binary features: `CreditScore`, `Age`, `Tenure`, `Balance`, `NumOfProducts`, `HasCrCard`, `IsActiveMember`, `EstimatedSalary`.[file:2]  
+- Dropped ID‑like fields: `CustomerId`, `Surname`, which do not carry predictive information.
+- Categorical features: `Geography` (France, Germany, Spain), `Gender` (Female, Male).
+- Numerical/binary features: `CreditScore`, `Age`, `Tenure`, `Balance`, `NumOfProducts`, `HasCrCard`, `IsActiveMember`, `EstimatedSalary`.
 
-Data quality checks confirmed 10,000 rows, 13 columns, and no missing values.[file:2]
+Data quality checks confirm 10,000 rows, 13 columns, and no missing values.
 
-Exploratory analysis included:[file:2]
+Exploratory analysis includes:
 
-- Correlation examples (e.g., Spearman correlation between `IsActiveMember` and `Exited`).[file:2]  
-- Distribution plots such as age distribution by churn and bar charts for churn by geography and by activity status.[file:2]
+- Correlation analysis (for example, Spearman correlation between `IsActiveMember` and `Exited`).
+- Distribution plots such as age distributions split by churn status.
+- Bar charts of churn rate by geography and by activity status.
 
 ## 3. Preprocessing
 
-Steps applied before modeling:[file:2]
+Before modeling, the following preprocessing steps are applied:
 
-- Encoded `Gender` and `Geography` using label encoders to convert categories to numeric values.[file:2]  
-- Split data into features (`X`, all columns except `Exited`) and target (`y = Exited`).[file:2]  
-- Converted feature matrix to a pure float array for compatibility with scikit‑learn.[file:2]  
-- Scaled features (standardization) to center and normalize the numeric inputs.[file:2]
+- Encode `Gender` and `Geography` using label encoders to convert categories to numeric codes.
+- Split the data into features `X` (all columns except `Exited`) and target `y = Exited`.
+- Cast the feature matrix to a float array for compatibility with scikit‑learn estimators.
+- Standardize features (zero mean, unit variance) so that distance‑based models like KNN work properly.
 
 ## 4. Models and Evaluation
 
-Models used:[file:2]
+Two baseline classification models are implemented using the same preprocessed data:
 
-- K‑Nearest Neighbors (KNN) classifier with hyperparameter tuning via GridSearchCV.[file:2]  
-- Decision Tree classifier (criterion entropy, limited depth) on the same scaled train/test split.[file:2]  
+- K‑Nearest Neighbors (KNN) classifier with hyperparameter tuning via `GridSearchCV` to find the best number of neighbors.
+- Decision Tree classifier (entropy criterion, limited depth to reduce overfitting).
 
-Training and evaluation:[file:2]
+Training and evaluation setup:
 
-- Train/test split examples:
-  - 70/30 split for KNN hyperparameter tuning.[file:2]  
-  - 80/20 split for decision tree evaluation.[file:2]  
-- Reported metrics:
-  - Best K for KNN (from grid search) and its cross‑validation score.[file:2]  
-  - KNN test MSE.[file:2]  
-  - Decision Tree test MSE.[file:2]  
+- Example train/test splits:
+  - 70/30 split for KNN hyperparameter tuning and model selection.
+  - 80/20 split for Decision Tree evaluation.
+- Reported metrics include:
+  - Best `k` value for KNN from grid search and its cross‑validation score.
+  - Test mean squared error (MSE) for KNN.
+  - Test MSE for the Decision Tree.
 
-(You can extend this to add classification metrics such as accuracy, precision, recall, F1‑score, and ROC‑AUC.)
+You can extend the notebook to report additional classification metrics, such as accuracy, precision, recall, F1‑score, confusion matrix, and ROC‑AUC.
 
 ## 5. Example Inference
 
-The notebook demonstrates how to score a single new customer:[file:2]
+The notebook shows how to generate a churn prediction for a single new customer:
 
-1. Define a new customer profile with values for credit score, geography, gender, age, tenure, balance, number of products, credit card status, activity status, and salary.[file:2]  
-2. Apply the same label encoders to map `Gender` and `Geography` to numeric values.[file:2]  
-3. Apply the same scaling transformation used for the training data (using the training mean and standard deviation).[file:2]  
-4. Feed the scaled feature vector into the trained decision tree to obtain a prediction: 0 (stay) or 1 (exit).[file:2]  
+1. Define a new customer profile with values for credit score, geography, gender, age, tenure, balance, number of products, credit card status, activity status, and estimated salary.
+2. Apply the fitted label encoders to map `Gender` and `Geography` to the same numeric codes used during training.
+3. Apply the fitted scaler (using training mean and standard deviation) to transform the feature vector.
+4. Feed the scaled vector into the trained Decision Tree model to obtain a prediction: 0 (stay) or 1 (exit).
 
-This shows how the model can be used in production for real‑time churn risk scoring.[file:2]
+This workflow demonstrates how the model can be used in production for real‑time churn risk scoring.
 
-## 6. How to Use This Project
+## 6. How to Use
 
-- Requirements: Python environment with pandas, numpy, seaborn, matplotlib, scikit‑learn, and scipy installed.[file:2]  
-- Files: Place `Churn.csv` in the same directory as the notebook.[file:2]  
-- Workflow:
-  - Run the notebook to load and clean the data.  
-  - Encode and scale features.  
-  - Train KNN and Decision Tree models.  
-  - Inspect evaluation metrics and visualizations (correlations, distributions, churn rate plots).  
-  - Use the example section to test predictions for new customers.[file:2]
+### Requirements
+
+Install the following Python packages:
+
+- `pandas`, `numpy` for data handling.
+- `seaborn`, `matplotlib` for visualization.
+- `scikit-learn`, `scipy` for modeling and evaluation.
+
+### Files
+
+- `Churn.csv`: main dataset containing 10,000 customer records.
+- Jupyter notebook: contains data exploration, preprocessing, model training, evaluation, and inference examples.
+
+Place `Churn.csv` in the same directory as the notebook.
+
+### Workflow
+
+- Run the notebook to:
+  - Load and clean the data.
+  - Encode and scale features.
+  - Train KNN and Decision Tree models.
+  - Inspect evaluation metrics and visualizations (correlations, distributions, churn rate plots).
+  - Use the example section to test predictions for new customer profiles.
